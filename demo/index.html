@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>jQuery validation plugin demo!</title>
+</head>
+<body>
+
+<p>
+    <input id="test" type="text" data-validate="required minLength 3" data-error="invalid data" data-error-minlength="3 characters minimum" />
+</p>
+<p>
+    <input id="optional" type="text" data-validate="minLength 3" data-error-minlength="3 characters minimum" />
+</p>
+<p>
+    <input id="dependent" type="text" data-validate="requiredBy #optional" data-error-requiredBy="this also must be filled" />
+</p>
+
+<script type="text/javascript" src="../lib/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="../src/slim-validation.jquery.js"></script>
+</body>
+</html>
