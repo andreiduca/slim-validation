@@ -112,20 +112,4 @@ $(window).load(function () {
     $('body').on('blur', '[data-validate]', function() {
         $(this).validateInput();
     });
-
-    /**
-     * Dummy behaviour on validation
-     */
-    $('body').on('validation:end', '[data-validate]', function(event, input, value, isValid, errorMessage) {
-        input.next('span').remove();
-
-        if (!isValid) {
-            input.after('<span style="color:red;">' + errorMessage + '</span>');
-            input.css({"border": "1px solid red"});
-        }
-        else {
-            input.after('<span style="color:green;">data is valid</span>');
-            input.css({"border": "1px solid green"});
-        }
-    });
 });

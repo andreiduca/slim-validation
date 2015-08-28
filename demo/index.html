@@ -18,5 +18,25 @@
 
 <script type="text/javascript" src="../lib/jquery-2.1.4.min.js"></script>
 <script type="text/javascript" src="../src/slim-validation.jquery.js"></script>
+<script type="text/javascript">
+    /** Dummy behaviour on validation */
+    $(window).load(function() {
+        $('body').on('validation:end', '[data-validate]', function(event, input, value, isValid, errorMessage) {
+            // clear the messages attached to current input
+            input.next('span').remove();
+
+            if (!isValid) {
+                // display an error message
+                input.after('<span style="color:red;">' + errorMessage + '</span>');
+                input.css({"border": "1px solid red"});
+            }
+            else {
+                // display a default success message
+                input.after('<span style="color:green;">data is valid</span>');
+                input.css({"border": "1px solid green"});
+            }
+        });
+    });
+</script>
 </body>
 </html>
