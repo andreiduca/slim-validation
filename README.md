@@ -20,27 +20,32 @@ The validation action is triggered by default on the "blur" event on each input.
 After each validation, a custom event is triggered so you can bind your own behaviour to it, like this:
 
 ```
-$('body').on('validation:end', '[data-validate]', function(event, input, value, isValid, errorMessage) {
+$('body').on('validation:end', '[data-validate]', function(event, $input, value, isValid, errorMessage) {
     // ... yout code goes here
 });
 ```
 
 Notice the parameters you can use at your own disposal. Use your imagination!
 
-In the demo HTML I only added a colored border and error message after each input to highlight the status:
+In the demo HTML I only added a colored border and error message after each input to highlight its status:
 
 ```
-input.next('span').remove();
+$('body').on('validation:end', '[data-validate]', function(event, $input, value, isValid, errorMessage) {
 
-if (!isValid) {
-    input.after('<span style="color:red;">' + errorMessage + '</span>');
-    input.css({"border": "1px solid red"});
-}
-else {
-    input.after('<span style="color:green;">data is valid</span>');
-    input.css({"border": "1px solid green"});
-}
+    $input.next('span').remove();
+
+    if (!isValid) {
+        $input.after('<span style="color:red;">' + errorMessage + '</span>');
+        $input.css({"border": "1px solid red"});
+    }
+    else {
+        $input.after('<span style="color:green;">data is valid</span>');
+        $input.css({"border": "1px solid green"});
+    }
+});
 ```
+
+**Note:** `$input` is a jQuery wrapper of the actual input being validated.
 
 ## Error messages
 Error messages are also defined with custom "data-" attributes:
@@ -72,9 +77,9 @@ More rules for the same input? Just chain them as usual.
 ## Validations rules reference:
 (This is a work in progress)
 
-- (`required`): the value must not be an empty string;
-- (`requiredBy`): the value must not be empty **only if** a related input is completed;
-- (`minLength`): the value must be more or equal in length than the provided ammount;
-- (`maxLength`): the value must be less or equal in length than the provided ammount;
-- (`email`): the value must match an email regex (not implemented yet);
-- (`phone`): (not implemented yet; different countries have different formats).
+- `required`: the value must not be an empty string;
+- `requiredBy`: the value must not be empty **only if** a related input is completed;
+- `minLength`: the value must be more or equal in length than the provided ammount;
+- `maxLength`: the value must be less or equal in length than the provided ammount;
+- `email`: the value must match an email regex (not implemented yet);
+- `phone`: (not implemented yet; different countries have different formats).
