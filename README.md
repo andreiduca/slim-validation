@@ -27,7 +27,20 @@ $('body').on('validation:end', '[data-validate]', function(event, input, value, 
 
 Notice the parameters you can use at your own disposal.
 
-In the demo HTML I only added a colored border and a colored error message after each input to highlight the status of each input.
+In the demo HTML I only added a colored border and a colored error message after each input to highlight the status of each input:
+
+```
+input.next('span').remove();
+
+if (!isValid) {
+    input.after('<span style="color:red;">' + errorMessage + '</span>');
+    input.css({"border": "1px solid red"});
+}
+else {
+    input.after('<span style="color:green;">data is valid</span>');
+    input.css({"border": "1px solid green"});
+}
+```
 
 ## Error messages
 Error messages are also defined with custom "data-" attributes:
