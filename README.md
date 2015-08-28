@@ -72,9 +72,9 @@ More rules for the same input? Just chain them as usual.
 ## Validations rules reference:
 (This is a work in progress)
 
-- required: the value must not be an empty string
-- requiredBy: the value must not be empty ONLY IF a related input is completed
-- minLength: the value must be more or equal in length than the provided ammount
-- maxLength: the value must be less or equal in length than the provided ammount
-- email: the value must match an email regex (not implemented yet)
-- phone: (not implemented yet; different countries have different formats)
+- (`required`): the value must not be an empty string;
+- (`requiredBy`): the value must not be empty **only if** a related input is completed;
+- (`minLength`): the value must be more or equal in length than the provided ammount;
+- (`maxLength`): the value must be less or equal in length than the provided ammount;
+- (`email`): the value must match an email regex (not implemented yet);
+- (`phone`): (not implemented yet; different countries have different formats).
