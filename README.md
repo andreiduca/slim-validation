@@ -1,6 +1,8 @@
 # slim-validation
 Lightweight jQuery validation plugin.
 
+[![Build Status](https://travis-ci.org/andreiduca/slim-validation.svg?branch=master)](https://travis-ci.org/andreiduca/slim-validation)
+
 ## Usage
 HTML-only setup required. Just set the "data-validate" custom attribute on your inputs and you're ready to go:
 
