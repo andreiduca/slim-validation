@@ -1,6 +1,7 @@
 # slim-validation
 Lightweight jQuery validation plugin.
 
+[![devDependency Status](https://david-dm.org/andreiduca/slim-validation/dev-status.svg)](https://david-dm.org/andreiduca/slim-validation#info=devDependencies)
 [![Build Status](https://travis-ci.org/andreiduca/slim-validation.svg?branch=master)](https://travis-ci.org/andreiduca/slim-validation)
 
 ## Usage
