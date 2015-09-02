@@ -20,7 +20,6 @@ module.exports = function (grunt) {
             all: {
                 options: {
                     urls: [
-                        'test/validation-rules.html?coverage=true&gruntReport',
                         'test/validation-rules.html?coverage=true&lcovReport'
                     ],
                     threshold: 50

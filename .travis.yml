@@ -3,6 +3,5 @@ node_js:
   - "0.12"
 before_install:
   - npm install -g grunt-cli
-  - npm install grunt-blanket-qunit
-  - npm install grunt-coveralls
+install: npm install
 after_success: grunt coveralls
