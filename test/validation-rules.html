@@ -11,10 +11,27 @@
 <!-- libs -->
 <script src="../lib/jquery-2.1.4.min.js"></script>
 <script src="http://code.jquery.com/qunit/qunit-1.18.0.js"></script>
-<script src="../lib/blanket.min.js" data-cover-reporter="../lib/grunt-reporter.js"></script>
+<script src="../lib/blanket.min.js"></script>
 <!-- plugin src files -->
 <script src="../src/slim-validation.jquery.js" data-cover></script>
 <!-- test files -->
 <script src="validation-rules.js"></script>
+<!-- code coverage reporters -->
+<script type="text/javascript">
+    // LCOV reporter, only if called with "lcovReport" parameter
+    if (location.href.match(/(\?|&)lcovReport($|&|=)/)) {
+        blanket.options("reporter", "reporters/lcov_reporter.js");
+        blanket.options("reporter_options", { toHTML:false });
+
+        // send results to PhantomJS
+        QUnit.done(function() {
+            alert(JSON.stringify(['qunit.report', window._$blanket_LCOV]));
+        });
+    }
+    // grunt reporter, only if called with "gruntReport" parameter
+    if (location.href.match(/(\?|&)gruntReport($|&|=)/)) {
+        blanket.options("reporter", "reporters/grunt-reporter.js");
+    }
+</script>
 </body>
 </html>

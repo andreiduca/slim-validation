@@ -20,10 +20,17 @@ module.exports = function (grunt) {
             all: {
                 options: {
                     urls: [
-                        'test/validation-rules.html?coverage=true&gruntReport'
+                        'test/validation-rules.html?coverage=true&gruntReport',
+                        'test/validation-rules.html?coverage=true&lcovReport'
                     ],
                     threshold: 50
                 }
+            }
+        },
+
+        coveralls: {
+            all: {
+                src: '.coverage-results/slim-validation.lcov'
             }
         },
 
@@ -51,8 +58,14 @@ module.exports = function (grunt) {
     // Load plugins
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-blanket-qunit');
+    grunt.loadNpmTasks('grunt-coveralls');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
+
+    // write lcov file on qunit end
+    grunt.event.on('qunit.report', function(data) {
+        grunt.file.write('.coverage-results/slim-validation.lcov', data);
+    });
 
     // Default tasks to run
     grunt.registerTask('default', ['jshint', 'blanket_qunit', 'uglify']);
