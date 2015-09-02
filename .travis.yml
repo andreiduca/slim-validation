@@ -4,4 +4,5 @@ node_js:
 before_install:
   - npm install -g grunt-cli
   - npm install grunt-blanket-qunit
+  - npm install grunt-coveralls
 after_success: grunt coveralls
