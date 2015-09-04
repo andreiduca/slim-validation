@@ -84,5 +84,5 @@ More rules for the same input? Just chain them as usual.
 - `requiredBy`: the value must not be empty **only if** a related input is completed;
 - `minLength`: the value must be more or equal in length than the provided ammount;
 - `maxLength`: the value must be less or equal in length than the provided ammount;
-- `email`: the value must match an email regex (not implemented yet);
+- `email`: the value must match the W3C compliant email Regex (see http://www.w3.org/TR/html-markup/input.email.html#input.email.attrs.value.single);
 - `phone`: (not implemented yet; different countries have different formats).
