@@ -8,10 +8,6 @@
 
     $.fn.Validator = function () {
         return {
-            skip: new $.fn.ValidationRule(function () {
-                return true;
-            }),
-
             required: new $.fn.ValidationRule(function (value) {
                 return typeof value !== 'undefined' && value !== '';
             }),
@@ -37,10 +33,16 @@
                 }
             ),
 
-            email: new $.fn.ValidationRule(function (value) {
-                // TODO: implement logic here
-                return false;
-            }),
+            email: $.extend(new $.fn.ValidationRule(function (value) {
+                    // W3C compliant: http://www.w3.org/TR/html-markup/input.email.html
+                    var emailRegex = new RegExp(/^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/);
+                    return emailRegex.test(value);
+                }), {
+                    cleanVal: function (value) {
+                        return value.trim();
+                    }
+                }
+            ),
 
             telephone: $.extend(new $.fn.ValidationRule(function (value) {
                     // TODO: implement logic here
