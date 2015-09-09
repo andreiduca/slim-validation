@@ -22,7 +22,7 @@ module.exports = function (grunt) {
                     urls: [
                         'test/validation-rules.html?coverage=true&gruntReport'
                     ],
-                    threshold: 50
+                    threshold: 90
                 }
             }
         },
