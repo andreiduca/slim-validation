@@ -2,7 +2,7 @@
   "name": "slim-validation",
   "description": "Lightweight jQuery validation plugin.",
   "author": "Andrei Duca",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-blanket-qunit": "^0.2.0",
