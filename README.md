@@ -82,7 +82,12 @@ More rules for the same input? Just chain them as usual.
 
 - `required`: the value must not be an empty string;
 - `requiredBy`: the value must not be empty **only if** a related input is completed;
-- `minLength`: the value must be more or equal in length than the provided ammount;
-- `maxLength`: the value must be less or equal in length than the provided ammount;
+- `numeric`: the value must contain only digits;
+- `min`: the value must be numeric and greater than or equal to the provided parameter;
+- `max`: the value must be numeric and lower than or equal to the provided parameter;
+- `range`: the value must be numeric and fall in the range provided using the format `1..10`;
+- `number`: the value must match one of the following number formats: `-12345.6789`, `-12345,6789`, `-12,345.6789`, `-12.345,6789` (the negative sign and the fractional part are optional);
+- `minLength`: the value's length must be more than or equal to the provided parameter;
+- `maxLength`: the value's length must be less than or equal to the provided parameter;
 - `email`: the value must match the W3C compliant email Regex (see http://www.w3.org/TR/html-markup/input.email.html#input.email.attrs.value.single);
 - `phone`: (not implemented yet; different countries have different formats).
