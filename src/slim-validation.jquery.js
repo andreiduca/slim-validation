@@ -1,4 +1,4 @@
-(function($) {
+(function ($) {
 
     $.fn.ValidationRule = function (rule) {
         return {
@@ -7,7 +7,7 @@
     };
 
     $.fn.Validator = function () {
-        return {
+        var This = {
             required: new $.fn.ValidationRule(function (value) {
                 return typeof value !== 'undefined' && value !== '';
             }),
@@ -19,7 +19,70 @@
                 }
             ),
 
+            numeric: $.extend(new $.fn.ValidationRule(function (value) {
+                    return typeof value !== 'undefined' && /^\d+$/.test(value);
+                }), {
+                    cleanVal: function (value) {
+                        return value.replace(/[^\w]/gi, '');
+                    }
+                }
+            ),
+
+            min: $.extend(new $.fn.ValidationRule(function (value, param) {
+                    if (!This.numeric.validate(param)) {
+                        throw new Error("Parameter '" + param + "' for validation rule 'min' is not a valid integer");
+                    }
+                    return This.numeric.validate(value) && parseInt(value) >= parseInt(param);
+                }), {
+                    withParam: true,
+                    cleanVal: function (value) {
+                        return This.numeric.cleanVal(value);
+                    }
+                }
+            ),
+
+            max: $.extend(new $.fn.ValidationRule(function (value, param) {
+                    if (!This.numeric.validate(param)) {
+                        throw new Error("Parameter " + param + " for validation rule 'max' is not a valid integer");
+                    }
+                    return This.numeric.validate(value) && value <= parseInt(param);
+                }), {
+                    withParam: true,
+                    cleanVal: function (value) {
+                        return This.numeric.cleanVal(value);
+                    }
+                }
+            ),
+
+            range: $.extend(new $.fn.ValidationRule(function (value, param) {
+                    var ranges = param.split('..');
+                    if (ranges.length != 2 || !This.numeric.validate(ranges[0]) || !This.numeric.validate(ranges[0])) {
+                        throw new Error("Parameter '" + param + "' for validation rule 'range' is not a valid range format: 1..10");
+                    }
+                    return This.numeric.validate(value) && This.min.validate(value, ranges[0]) && This.max.validate(value, ranges[1]);
+                }), {
+                    withParam: true,
+                    cleanVal: function (value) {
+                        return This.numeric.cleanVal(value);
+                    }
+                }
+            ),
+
+            number: $.extend(new $.fn.ValidationRule(function (value) {
+                    return /^[\-]?[\d]+(,|\.[\d]+)?$/.test(value) // no thousands separator
+                        || /^[\-]?[\d]{1,3}(,[\d]{3})*(\.[\d]+)?$/.test(value) // comma-separated thousands
+                        || /^[\-]?[\d]{1,3}(\.[\d]{3})*(,[\d]+)?$/.test(value); // dot-separated thousands
+                }), {
+                    cleanVal: function (value) {
+                        return value.replace(/[^\w\.\,\-]/gi, '');
+                    }
+                }
+            ),
+
             minLength: $.extend(new $.fn.ValidationRule(function (value, param) {
+                    if (!This.numeric.validate(param)) {
+                        throw new Error("Parameter " + param + " for validation rule 'minLength' is not a valid integer!");
+                    }
                     return typeof value !== 'undefined' && value.length >= parseInt(param);
                 }), {
                     withParam: true
@@ -27,6 +90,9 @@
             ),
 
             maxLength: $.extend(new $.fn.ValidationRule(function (value, param) {
+                    if (!This.numeric.validate(param)) {
+                        throw new Error("Parameter " + param + " for validation rule 'maxLength' is not a valid integer!");
+                    }
                     return typeof value !== 'undefined' && value.length <= parseInt(param);
                 }), {
                     withParam: true
@@ -36,7 +102,7 @@
             email: $.extend(new $.fn.ValidationRule(function (value) {
                     // W3C compliant: http://www.w3.org/TR/html-markup/input.email.html
                     var emailRegex = new RegExp(/^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/);
-                    return emailRegex.test(value);
+                    return typeof value !== 'undefined' && emailRegex.test(value);
                 }), {
                     cleanVal: function (value) {
                         return value.trim();
@@ -54,6 +120,8 @@
                 }
             )
         };
+
+        return This;
     };
 
     $.fn.validateInput = function () {
@@ -109,7 +177,7 @@
 
 
     $(window).load(function () {
-        $('body').on('blur', '[data-validate]', function() {
+        $('body').on('blur', '[data-validate]', function () {
             $(this).validateInput();
         });
     });
