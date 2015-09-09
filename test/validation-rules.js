@@ -37,7 +37,7 @@ QUnit.test("rule: optional", function (assert) {
 
     // not empty optional value
     $input.val('as').validateInput();
-    assert.ok($input.data('validation-result') !== true, "Not empty optional value checks other rules.");
+    assert.ok($input.data('validation-result') === false, "Not empty optional value checks other rules.");
     resetInputValidation();
 });
 
@@ -46,7 +46,7 @@ QUnit.test("rule: required", function (assert) {
 
     // empty value must be invalid
     $input.val('').validateInput();
-    assert.ok($input.data('validation-result') !== true, "Empty value detected.");
+    assert.ok($input.data('validation-result') === false, "Empty value detected.");
     resetInputValidation();
 
     // not empty value must be valid
@@ -62,19 +62,196 @@ QUnit.test("rule: required", function (assert) {
     // empty value must display custom error message
     $input.val('').attr('data-error-required', 'custom error message').validateInput();
     assert.ok($input.data('validation-error') === "custom error message", "Custom error message displayed.");
+    $input.removeAttr('data-error-required');
     resetInputValidation();
-    $input.val('').removeAttr('data-error-required');
+});
+
+QUnit.test("rule: numeric", function (assert) {
+    $input.attr('data-validate', "numeric");
+
+    // empty value must be invalid
+    $input.val('').validateInput();
+    assert.ok($input.data('validation-result') === false, "Empty value detected.");
+    resetInputValidation();
+
+    // numeric value must be valid
+    $input.val('123').validateInput();
+    assert.ok($input.data('validation-result') === true, "Numeric value passed.");
+    resetInputValidation();
+
+    // non-trimmed numeric value must be valid
+    $input.val(' 123 ').validateInput();
+    assert.ok($input.data('validation-result') === true, "Non-trimmed numeric value passed.");
+    resetInputValidation();
+
+    // alphanumeric value must be invalid
+    $input.val('a1b2c3d').validateInput();
+    assert.ok($input.data('validation-result') === false, "Alphanumeric value detected.");
+    resetInputValidation();
+
+    // random characters value must be invalid
+    $input.val('~!@#$%^&*()_+').validateInput();
+    assert.ok($input.data('validation-result') === false, "Alphanumeric value detected.");
+    resetInputValidation();
+
+    // empty value must display fallback error message
+    $input.val('').validateInput();
+    assert.ok($input.data('validation-error') === "default error message", "Default error message displayed.");
+    resetInputValidation();
+
+    // empty value must display custom error message
+    $input.val('').attr('data-error-numeric', 'custom error message').validateInput();
+    assert.ok($input.data('validation-error') === "custom error message", "Custom error message displayed.");
+    $input.removeAttr('data-error-numeric');
+    resetInputValidation();
+});
+
+QUnit.test("rule: min", function (assert) {
+    $input.attr('data-validate', "min 3");
+
+    // empty value must be invalid
+    $input.val('').validateInput();
+    assert.ok($input.data('validation-result') === false, "Empty value detected.");
+    resetInputValidation();
+
+    // a value lower than the one required fails
+    $input.val('1').validateInput();
+    assert.ok($input.data('validation-result') === false, "Lower value detected.");
+    resetInputValidation();
+
+    // a value higher than the one required passes
+    $input.val('10').validateInput();
+    assert.ok($input.data('validation-result') === true, "Higher value passed.");
+    resetInputValidation();
+
+    // empty value must display fallback error message
+    $input.val('').validateInput();
+    assert.ok($input.data('validation-error') === "default error message", "Default error message displayed.");
+    resetInputValidation();
+
+    // empty value must display custom error message
+    $input.val('').attr('data-error-min', 'custom error message').validateInput();
+    assert.ok($input.data('validation-error') === "custom error message", "Custom error message displayed.");
+    $input.removeAttr('data-error-min');
+    resetInputValidation();
+
+    // try to catch invalid parameter for current rule
+    $input.attr('data-validate', "min abc");
+    var e = false;
+    try {
+        // value is irrelevant because the validation rule is badly defined
+        $input.validateInput();
+    }
+    catch (ex) {
+        e = ex;
+    }
+
+    assert.ok(e !== false, "Invalid parameter passed for 'min': " + e);
+    resetInputValidation();
+});
+
+QUnit.test("rule: max", function (assert) {
+    $input.attr('data-validate', "max 3");
+
+    // empty value must be invalid
+    $input.val('').validateInput();
+    assert.ok($input.data('validation-result') === false, "Empty value detected.");
+    resetInputValidation();
+
+    // a value higher than the one required fails
+    $input.val('10').validateInput();
+    assert.ok($input.data('validation-result') === false, "Higher value detected.");
+    resetInputValidation();
+
+    // a value lower than the one required passes
+    $input.val('1').validateInput();
+    assert.ok($input.data('validation-result') === true, "Lower value passed.");
+    resetInputValidation();
+
+    // empty value must display fallback error message
+    $input.val('').validateInput();
+    assert.ok($input.data('validation-error') === "default error message", "Default error message displayed.");
+    resetInputValidation();
+
+    // empty value must display custom error message
+    $input.val('').attr('data-error-max', 'custom error message').validateInput();
+    assert.ok($input.data('validation-error') === "custom error message", "Custom error message displayed.");
+    $input.removeAttr('data-error-max');
+    resetInputValidation();
+
+    // try to catch invalid parameter for current rule
+    $input.attr('data-validate', "max abc");
+    var e = false;
+    try {
+        // value is irrelevant because the validation rule is badly defined
+        $input.validateInput();
+    }
+    catch (ex) {
+        e = ex;
+    }
+
+    assert.ok(e !== false, "Invalid parameter passed for 'max': " + e);
+    resetInputValidation();
+});
+
+QUnit.test("rule: range", function (assert) {
+    $input.attr('data-validate', "range 5..10");
+
+    // empty value must be invalid
+    $input.val('').validateInput();
+    assert.ok($input.data('validation-result') === false, "Empty value detected.");
+    resetInputValidation();
+
+    // a value lower than the one required fails
+    $input.val('1').validateInput();
+    assert.ok($input.data('validation-result') === false, "Lower value detected.");
+    resetInputValidation();
+
+    // a value higher than the one required fails
+    $input.val('100').validateInput();
+    assert.ok($input.data('validation-result') === false, "Higher value detected.");
+    resetInputValidation();
+
+    // a value inside the range passes
+    $input.val('7').validateInput();
+    assert.ok($input.data('validation-result') === true, "In range value passed.");
+    resetInputValidation();
+
+    // empty value must display fallback error message
+    $input.val('').validateInput();
+    assert.ok($input.data('validation-error') === "default error message", "Default error message displayed.");
+    resetInputValidation();
+
+    // empty value must display custom error message
+    $input.val('').attr('data-error-range', 'custom error message').validateInput();
+    assert.ok($input.data('validation-error') === "custom error message", "Custom error message displayed.");
+    $input.removeAttr('data-error-range');
+    resetInputValidation();
+
+    // try to catch invalid parameter for current rule
+    $input.attr('data-validate', "range abc");
+    var e = false;
+    try {
+        // value is irrelevant because the validation rule is badly defined
+        $input.validateInput();
+    }
+    catch (ex) {
+        e = ex;
+    }
+
+    assert.ok(e !== false, "Invalid parameter passed for 'range': " + e);
+    resetInputValidation();
 });
 
 QUnit.test("rule: minLength", function (assert) {
     $input.attr('data-validate', "minLength 5");
 
     $input.val('').validateInput();
-    assert.ok($input.data('validation-result') !== true, "Empty value detected.");
+    assert.ok($input.data('validation-result') === false, "Empty value detected.");
     resetInputValidation();
 
     $input.val('asd').validateInput();
-    assert.ok($input.data('validation-result') !== true, "Too few characters detected.");
+    assert.ok($input.data('validation-result') === false, "Too few characters detected.");
     resetInputValidation();
 
     $input.val('asdfgh').validateInput();
@@ -89,8 +266,22 @@ QUnit.test("rule: minLength", function (assert) {
     // empty value must display custom error message
     $input.val('').attr('data-error-minLength', 'custom error message').validateInput();
     assert.ok($input.data('validation-error') === "custom error message", "Custom error message displayed.");
+    $input.removeAttr('data-error-minLength');
     resetInputValidation();
-    $input.val('').removeAttr('data-error-minLength');
+
+    // try to catch invalid parameter for current rule
+    $input.attr('data-validate', "minLength abc");
+    var e = false;
+    try {
+        // value is irrelevant because the validation rule is badly defined
+        $input.validateInput();
+    }
+    catch (ex) {
+        e = ex;
+    }
+
+    assert.ok(e !== false, "Invalid parameter passed for 'range': " + e);
+    resetInputValidation();
 });
 
 QUnit.test("rule: maxLength", function (assert) {
@@ -106,7 +297,7 @@ QUnit.test("rule: maxLength", function (assert) {
     resetInputValidation();
 
     $input.val('asdfgh').validateInput();
-    assert.ok($input.data('validation-result') !== true, "Too many characters detected.");
+    assert.ok($input.data('validation-result') === false, "Too many characters detected.");
     resetInputValidation();
 
     // empty value must display fallback error message
@@ -117,8 +308,22 @@ QUnit.test("rule: maxLength", function (assert) {
     // empty value must display custom error message
     $input.val('asdfgh').attr('data-error-maxLength', 'custom error message').validateInput();
     assert.ok($input.data('validation-error') === "custom error message", "Custom error message displayed.");
+    $input.removeAttr('data-error-maxLength');
     resetInputValidation();
-    $input.val('').removeAttr('data-error-maxLength');
+
+    // try to catch invalid parameter for current rule
+    $input.attr('data-validate', "maxLength abc");
+    var e = false;
+    try {
+        // value is irrelevant because the validation rule is badly defined
+        $input.validateInput();
+    }
+    catch (ex) {
+        e = ex;
+    }
+
+    assert.ok(e !== false, "Invalid parameter passed for 'range': " + e);
+    resetInputValidation();
 });
 
 QUnit.test("rule: email", function (assert) {
@@ -126,7 +331,7 @@ QUnit.test("rule: email", function (assert) {
     $input.attr('data-validate', "email");
 
     $input.val('').validateInput();
-    assert.ok($input.data('validation-result') !== true, "Empty value is not a valid email.");
+    assert.ok($input.data('validation-result') === false, "Empty value is not a valid email.");
     resetInputValidation();
 
     $input.val('simple@email.address').validateInput();
@@ -149,8 +354,8 @@ QUnit.test("rule: email", function (assert) {
     // empty value must display custom error message
     $input.val('').attr('data-error-email', 'custom error message').validateInput();
     assert.ok($input.data('validation-error') === "custom error message", "Custom error message displayed.");
+    $input.removeAttr('data-error-email');
     resetInputValidation();
-    $input.val('').removeAttr('data-error-email');
 });
 
 // TODO: move this test in another test file
