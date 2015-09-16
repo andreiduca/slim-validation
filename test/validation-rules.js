@@ -243,6 +243,77 @@ QUnit.test("rule: range", function (assert) {
     resetInputValidation();
 });
 
+QUnit.test("rule: number", function (assert) {
+    $input.attr('data-validate', "number");
+
+    $input.val('').validateInput();
+    assert.ok($input.data('validation-result') === false, "Empty value detected.");
+    resetInputValidation();
+
+    $input.val('0').validateInput();
+    assert.ok($input.data('validation-result') === true, "Zero number passed.");
+    resetInputValidation();
+
+    $input.val('123456').validateInput();
+    assert.ok($input.data('validation-result') === true, "Simple number passed.");
+    resetInputValidation();
+
+    $input.val('-123456').validateInput();
+    assert.ok($input.data('validation-result') === true, "Simple negative number passed.");
+    resetInputValidation();
+
+    $input.val('123456.98765').validateInput();
+    assert.ok($input.data('validation-result') === true, "Simple number w/ dot-fraction passed.");
+    resetInputValidation();
+
+    $input.val('-123456.98765').validateInput();
+    assert.ok($input.data('validation-result') === true, "Simple negative number w/ dot-fraction passed.");
+    resetInputValidation();
+
+    $input.val('123456,98765').validateInput();
+    assert.ok($input.data('validation-result') === true, "Simple number w/ comma-fraction passed.");
+    resetInputValidation();
+
+    $input.val('-123456,98765').validateInput();
+    assert.ok($input.data('validation-result') === true, "Simple negative number w/ comma-fraction passed.");
+    resetInputValidation();
+
+    $input.val('12,345,678.98765').validateInput();
+    assert.ok($input.data('validation-result') === true, "Comma separated thousands w/ dot-fraction passed.");
+    resetInputValidation();
+
+    $input.val('12,345,678').validateInput();
+    assert.ok($input.data('validation-result') === true, "Comma separated thousands, no fraction passed.");
+    resetInputValidation();
+
+    $input.val('-12,345,678.98765').validateInput();
+    assert.ok($input.data('validation-result') === true, "Negative comma separated thousands w/ dot-fraction passed.");
+    resetInputValidation();
+
+    $input.val('12.345.678,98765').validateInput();
+    assert.ok($input.data('validation-result') === true, "Dot separated thousands w/ comma-fraction passed.");
+    resetInputValidation();
+
+    $input.val('12.345.678').validateInput();
+    assert.ok($input.data('validation-result') === true, "Dot separated thousands, no fraction passed.");
+    resetInputValidation();
+
+    $input.val('-12.345.678,98765').validateInput();
+    assert.ok($input.data('validation-result') === true, "Negative dot separated thousands w/ comma-fraction passed.");
+    resetInputValidation();
+
+    // empty value must display fallback error message
+    $input.val('').validateInput();
+    assert.ok($input.data('validation-error') === "default error message", "Default error message displayed.");
+    resetInputValidation();
+
+    // empty value must display custom error message
+    $input.val('').attr('data-error-number', 'custom error message').validateInput();
+    assert.ok($input.data('validation-error') === "custom error message", "Custom error message displayed.");
+    $input.removeAttr('data-error-number');
+    resetInputValidation();
+});
+
 QUnit.test("rule: minLength", function (assert) {
     $input.attr('data-validate', "minLength 5");
 
@@ -285,7 +356,6 @@ QUnit.test("rule: minLength", function (assert) {
 });
 
 QUnit.test("rule: maxLength", function (assert) {
-
     $input.attr('data-validate', "maxLength 5");
 
     $input.val('').validateInput();
@@ -327,24 +397,58 @@ QUnit.test("rule: maxLength", function (assert) {
 });
 
 QUnit.test("rule: email", function (assert) {
-
     $input.attr('data-validate', "email");
+
+    // http://blogs.msdn.com/b/testing123/archive/2009/02/05/email-address-test-cases.aspx
+    var validEmails = [
+        'email@domain.com',                 // Valid email
+        'firstname.lastname@domain.com',    // Email contains dot in the address field
+        'email@subdomain.domain.com',       // Email contains dot with subdomain
+        'firstname+lastname@domain.com',    // Plus sign is considered valid character
+        'email@123.123.123.123',            // Domain is valid IP address
+        // skipped 2 due to complexity:
+        //'email@[123.123.123.123]',          // Square bracket around IP address is considered valid
+        //'"email"@domain.com',               // Quotes around email is considered valid
+        '1234567890@domain.com',            // Digits in address are valid
+        'email@domain-one.com',             // Dash in domain name is valid
+        '_______@domain.com',               // Underscore in the address field is valid
+        'email@domain.name',                // .name is valid Top Level Domain name
+        'email@domain.co.jp',               // Dot in Top Level Domain name also considered valid (use co.jp as example here)
+        'firstname-lastname@domain.com'     // Dash in address field is valid
+    ];
+    var invalidEmails = [
+        'plainaddress',                 // Missing @ sign and domain
+        '#@%^%#$@#$@#.com',             // Garbage
+        '@domain.com',                  // Missing username
+        'Joe Smith <email@domain.com>', // Encoded html within email is invalid
+        'email.domain.com',             // Missing @
+        'email@domain@domain.com',      // Two @ sign
+        '.email@domain.com',            // Leading dot in address is not allowed
+        'email.@domain.com',            // Trailing dot in address is not allowed
+        'email..email@domain.com',      // Multiple dots
+        'あいうえお@domain.com',         // Unicode char as address
+        'email@domain.com (Joe Smith)', // Text followed email is not allowed
+        'email@domain',                 // Missing top level domain (.com/.net/.org/etc)
+        'email@-domain.com',            // Leading dash in front of domain is invalid
+        'email@domain..com'             // Multiple dot in the domain portion is invalid
+    ];
+
 
     $input.val('').validateInput();
     assert.ok($input.data('validation-result') === false, "Empty value is not a valid email.");
     resetInputValidation();
 
-    $input.val('simple@email.address').validateInput();
-    assert.ok($input.data('validation-result') === true, "Simple email address passed.");
-    resetInputValidation();
+    for (i = 0; i < validEmails.length; i++) {
+        $input.val(validEmails[i]).validateInput();
+        assert.ok($input.data('validation-result') === true, validEmails[i] + " - Valid email address passed.");
+        resetInputValidation();
+    }
 
-    $input.val('medium.complexity@email.address').validateInput();
-    assert.ok($input.data('validation-result') === true, "Medium complexity email address passed.");
-    resetInputValidation();
-
-    $input.val('very_complex.emailaddress123@email.address.com').validateInput();
-    assert.ok($input.data('validation-result') === true, "High complexity email address passed.");
-    resetInputValidation();
+    for (i = 0; i < invalidEmails.length; i++) {
+        $input.val(invalidEmails[i]).validateInput();
+        assert.ok($input.data('validation-result') === false, invalidEmails[i] + " - Invalid email address detected.");
+        resetInputValidation();
+    }
 
     // empty value must display fallback error message
     $input.val('').validateInput();
