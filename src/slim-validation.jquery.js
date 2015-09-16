@@ -69,9 +69,9 @@
             ),
 
             number: $.extend(new $.fn.ValidationRule(function (value) {
-                    return /^[\-]?[\d]+((,|\.)[\d]+)?$/.test(value) // no thousands separator, optional fraction
-                        || /^[\-]?[\d]{1,3}(,[\d]{3})*(\.[\d]+)?$/.test(value) // comma-separated thousands, dot-fraction
-                        || /^[\-]?[\d]{1,3}(\.[\d]{3})*(,[\d]+)?$/.test(value); // dot-separated thousands, comma-fraction
+                    return /^[\-]?[\d]+((,|\.)[\d]+)?$/.test(value) || // no thousands separator, optional fraction
+                        /^[\-]?[\d]{1,3}(,[\d]{3})*(\.[\d]+)?$/.test(value) || // comma-separated thousands, dot-fraction
+                        /^[\-]?[\d]{1,3}(\.[\d]{3})*(,[\d]+)?$/.test(value); // dot-separated thousands, comma-fraction
                 }), {
                     cleanVal: function (value) {
                         return value.replace(/[^\w\.\,\-]/gi, '');
