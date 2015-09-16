@@ -69,9 +69,9 @@
             ),
 
             number: $.extend(new $.fn.ValidationRule(function (value) {
-                    return /^[\-]?[\d]+(,|\.[\d]+)?$/.test(value) // no thousands separator
-                        || /^[\-]?[\d]{1,3}(,[\d]{3})*(\.[\d]+)?$/.test(value) // comma-separated thousands
-                        || /^[\-]?[\d]{1,3}(\.[\d]{3})*(,[\d]+)?$/.test(value); // dot-separated thousands
+                    return /^[\-]?[\d]+((,|\.)[\d]+)?$/.test(value) // no thousands separator, optional fraction
+                        || /^[\-]?[\d]{1,3}(,[\d]{3})*(\.[\d]+)?$/.test(value) // comma-separated thousands, dot-fraction
+                        || /^[\-]?[\d]{1,3}(\.[\d]{3})*(,[\d]+)?$/.test(value); // dot-separated thousands, comma-fraction
                 }), {
                     cleanVal: function (value) {
                         return value.replace(/[^\w\.\,\-]/gi, '');
@@ -100,8 +100,8 @@
             ),
 
             email: $.extend(new $.fn.ValidationRule(function (value) {
-                    // W3C compliant: http://www.w3.org/TR/html-markup/input.email.html
-                    var emailRegex = new RegExp(/^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/);
+                    // "practical implementation of RFC 5322": http://www.regular-expressions.info/email.html
+                    var emailRegex = new RegExp(/^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/);
                     return typeof value !== 'undefined' && emailRegex.test(value);
                 }), {
                     cleanVal: function (value) {
