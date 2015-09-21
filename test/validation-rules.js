@@ -137,16 +137,7 @@ QUnit.test("rule: min", function (assert) {
 
     // try to catch invalid parameter for current rule
     $input.attr('data-validate', "min abc");
-    var e = false;
-    try {
-        // value is irrelevant because the validation rule is badly defined
-        $input.validateInput();
-    }
-    catch (ex) {
-        e = ex;
-    }
-
-    assert.ok(e !== false, "Invalid parameter passed for 'min': " + e);
+    assert.throws(function() { $input.validateInput(); }, "Invalid parameter passed for 'min': abc");
     resetInputValidation();
 });
 
@@ -181,16 +172,7 @@ QUnit.test("rule: max", function (assert) {
 
     // try to catch invalid parameter for current rule
     $input.attr('data-validate', "max abc");
-    var e = false;
-    try {
-        // value is irrelevant because the validation rule is badly defined
-        $input.validateInput();
-    }
-    catch (ex) {
-        e = ex;
-    }
-
-    assert.ok(e !== false, "Invalid parameter passed for 'max': " + e);
+    assert.throws(function() { $input.validateInput(); }, "Invalid parameter passed for 'max': abc");
     resetInputValidation();
 });
 
@@ -217,6 +199,11 @@ QUnit.test("rule: range", function (assert) {
     assert.ok($input.data('validation-result') === true, "In range value passed.");
     resetInputValidation();
 
+    $input.attr('data-validate', "range -10..-1");
+    $input.val('-7').validateInput();
+    assert.ok($input.data('validation-result') === true, "In range negative value passed.");
+    resetInputValidation();
+
     // empty value must display fallback error message
     $input.val('').validateInput();
     assert.ok($input.data('validation-error') === "default error message", "Default error message displayed.");
@@ -230,16 +217,17 @@ QUnit.test("rule: range", function (assert) {
 
     // try to catch invalid parameter for current rule
     $input.attr('data-validate', "range abc");
-    var e = false;
-    try {
-        // value is irrelevant because the validation rule is badly defined
-        $input.validateInput();
-    }
-    catch (ex) {
-        e = ex;
-    }
+    assert.throws(function() { $input.validateInput(); }, "Invalid parameter passed for 'range': abc");
+    resetInputValidation();
 
-    assert.ok(e !== false, "Invalid parameter passed for 'range': " + e);
+    // try to catch invalid parameter for current rule
+    $input.attr('data-validate', "range 1..x");
+    assert.throws(function() { $input.validateInput(); }, "Invalid parameter passed for 'range': 1..x");
+    resetInputValidation();
+
+    // try to catch invalid parameter for current rule
+    $input.attr('data-validate', "range x..10");
+    assert.throws(function() { $input.validateInput(); }, "Invalid parameter passed for 'range': x..10");
     resetInputValidation();
 });
 
@@ -342,16 +330,7 @@ QUnit.test("rule: minLength", function (assert) {
 
     // try to catch invalid parameter for current rule
     $input.attr('data-validate', "minLength abc");
-    var e = false;
-    try {
-        // value is irrelevant because the validation rule is badly defined
-        $input.validateInput();
-    }
-    catch (ex) {
-        e = ex;
-    }
-
-    assert.ok(e !== false, "Invalid parameter passed for 'range': " + e);
+    assert.throws(function() { $input.validateInput(); }, "Invalid parameter passed for 'minLength': abc");
     resetInputValidation();
 });
 
@@ -383,23 +362,18 @@ QUnit.test("rule: maxLength", function (assert) {
 
     // try to catch invalid parameter for current rule
     $input.attr('data-validate', "maxLength abc");
-    var e = false;
-    try {
-        // value is irrelevant because the validation rule is badly defined
-        $input.validateInput();
-    }
-    catch (ex) {
-        e = ex;
-    }
-
-    assert.ok(e !== false, "Invalid parameter passed for 'range': " + e);
+    assert.throws(function() { $input.validateInput(); }, "Invalid parameter passed for 'maxLength': abc");
     resetInputValidation();
 });
 
 QUnit.test("rule: email", function (assert) {
     $input.attr('data-validate', "email");
 
-    // http://blogs.msdn.com/b/testing123/archive/2009/02/05/email-address-test-cases.aspx
+    $input.val('').validateInput();
+    assert.ok($input.data('validation-result') === false, "Empty value is not a valid email.");
+    resetInputValidation();
+
+    // from http://blogs.msdn.com/b/testing123/archive/2009/02/05/email-address-test-cases.aspx
     var validEmails = [
         'email@domain.com',                 // Valid email
         'firstname.lastname@domain.com',    // Email contains dot in the address field
@@ -433,12 +407,7 @@ QUnit.test("rule: email", function (assert) {
         'email@domain..com'             // Multiple dot in the domain portion is invalid
     ];
 
-
-    $input.val('').validateInput();
-    assert.ok($input.data('validation-result') === false, "Empty value is not a valid email.");
-    resetInputValidation();
-
-    for (i = 0; i < validEmails.length; i++) {
+    for (var i = 0; i < validEmails.length; i++) {
         $input.val(validEmails[i]).validateInput();
         assert.ok($input.data('validation-result') === true, validEmails[i] + " - Valid email address passed.");
         resetInputValidation();
@@ -464,16 +433,16 @@ QUnit.test("rule: email", function (assert) {
 
 // TODO: move this test in another test file
 QUnit.test("Plugin bootstrapping", function (assert) {
-    var $otherInput = $input.clone();
-    $otherInput.attr('data-validate', "required");
+    var $DOMInput = $input.clone();
+    $DOMInput.attr('data-validate', "required");
 
-    $('body').append($otherInput);
+    $('body').append($DOMInput);
     $(window).trigger('load');
 
-    $otherInput.val('');
+    $DOMInput.val('');
 
-    $otherInput.blur();
-    assert.ok($otherInput.data('validation-result') !== -1, "Plugin initialised on window.load for blur event.");
+    $DOMInput.blur();
+    assert.ok($DOMInput.data('validation-result') !== -1, "Plugin initialised on window.load for blur event.");
 
-    $otherInput.remove();
+    $DOMInput.remove();
 });
