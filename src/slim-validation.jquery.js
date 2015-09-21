@@ -28,42 +28,54 @@
                 }
             ),
 
-            min: $.extend(new $.fn.ValidationRule(function (value, param) {
-                    if (!This.numeric.validate(param)) {
-                        throw new Error("Parameter '" + param + "' for validation rule 'min' is not a valid integer");
+            integer: $.extend(new $.fn.ValidationRule(function(value) {
+                    return value == parseInt(value);
+                }), {
+                    cleanVal: function(value) {
+                        return value.replace(/[^\w\-]/gi, '');
                     }
-                    return This.numeric.validate(value) && parseInt(value) >= parseInt(param);
+                }
+            ),
+
+            min: $.extend(new $.fn.ValidationRule(function (value, param) {
+                    return This.integer.validate(value) && parseInt(value) >= parseInt(param);
                 }), {
                     withParam: true,
-                    cleanVal: function (value) {
-                        return This.numeric.cleanVal(value);
+                    cleanVal: function (value, param) {
+                        if (typeof param != 'undefined' && !This.integer.validate(param)) {
+                            throw new Error("Parameter '" + param + "' for validation rule 'min' is not a valid integer.");
+                        }
+                        return This.integer.cleanVal(value);
                     }
                 }
             ),
 
             max: $.extend(new $.fn.ValidationRule(function (value, param) {
-                    if (!This.numeric.validate(param)) {
-                        throw new Error("Parameter " + param + " for validation rule 'max' is not a valid integer");
-                    }
-                    return This.numeric.validate(value) && value <= parseInt(param);
+                    return This.integer.validate(value) && parseInt(value) <= parseInt(param);
                 }), {
                     withParam: true,
-                    cleanVal: function (value) {
-                        return This.numeric.cleanVal(value);
+                    cleanVal: function (value, param) {
+                        if (typeof param != 'undefined' && !This.integer.validate(param)) {
+                            throw new Error("Parameter " + param + " for validation rule 'max' is not a valid integer.");
+                        }
+                        return This.integer.cleanVal(value);
                     }
                 }
             ),
 
             range: $.extend(new $.fn.ValidationRule(function (value, param) {
                     var ranges = param.split('..');
-                    if (ranges.length != 2 || !This.numeric.validate(ranges[0]) || !This.numeric.validate(ranges[0])) {
-                        throw new Error("Parameter '" + param + "' for validation rule 'range' is not a valid range format: 1..10");
-                    }
-                    return This.numeric.validate(value) && This.min.validate(value, ranges[0]) && This.max.validate(value, ranges[1]);
+                    return This.integer.validate(value) && This.min.validate(value, ranges[0]) && This.max.validate(value, ranges[1]);
                 }), {
                     withParam: true,
-                    cleanVal: function (value) {
-                        return This.numeric.cleanVal(value);
+                    cleanVal: function (value, param) {
+                        if (typeof param != 'undefined' && param) {
+                            var ranges = param.split('..');
+                            if (ranges.length != 2 || !This.integer.validate(ranges[0]) || !This.integer.validate(ranges[1])) {
+                                throw new Error("Parameter '" + param + "' for validation rule 'range' is not a valid range format: 1..10");
+                            }
+                        }
+                        return This.integer.cleanVal(value);
                     }
                 }
             ),
@@ -80,22 +92,28 @@
             ),
 
             minLength: $.extend(new $.fn.ValidationRule(function (value, param) {
-                    if (!This.numeric.validate(param)) {
-                        throw new Error("Parameter " + param + " for validation rule 'minLength' is not a valid integer!");
-                    }
                     return typeof value !== 'undefined' && value.length >= parseInt(param);
                 }), {
-                    withParam: true
+                    withParam: true,
+                    cleanVal: function(value, param) {
+                        if (typeof param != 'undefined' && !This.integer.validate(param)) {
+                            throw new Error("Parameter " + param + " for validation rule 'minLength' is not a valid integer.");
+                        }
+                        return value.trim();
+                    }
                 }
             ),
 
             maxLength: $.extend(new $.fn.ValidationRule(function (value, param) {
-                    if (!This.numeric.validate(param)) {
-                        throw new Error("Parameter " + param + " for validation rule 'maxLength' is not a valid integer!");
-                    }
                     return typeof value !== 'undefined' && value.length <= parseInt(param);
                 }), {
-                    withParam: true
+                    withParam: true,
+                    cleanVal: function(value, param) {
+                        if (typeof param != 'undefined' && !This.integer.validate(param)) {
+                            throw new Error("Parameter " + param + " for validation rule 'maxLength' is not a valid integer.");
+                        }
+                        return value.trim();
+                    }
                 }
             ),
 
@@ -136,7 +154,8 @@
         var Validator = new $.fn.Validator();
 
         for (var i = 0; i < rules.length && isValid; i++) {
-            var rule = rules[i], param;
+            var rule = rules[i];
+            var param = (rules[i+1] ? rules[i+1] : null);
 
             // stop further processing
             if (rule === '' || rule === 'skip' || (rule === 'optional' && inputValue === '')) {
@@ -147,12 +166,12 @@
 
                 // rule needs further cleanliness of value
                 if (typeof Validator[rule].cleanVal === 'function') {
-                    inputValue = Validator[rule].cleanVal(inputValue);
+                    inputValue = Validator[rule].cleanVal(inputValue, param);
                 }
 
                 // treat next rule as a parameter for current rule
                 if (Validator[rule].withParam) {
-                    param = rules[++i];
+                    i++;
                 }
 
                 // validate the input for current rule
