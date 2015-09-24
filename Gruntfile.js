@@ -44,6 +44,10 @@ module.exports = function (grunt) {
             build: {
                 src: 'src/<%= pkg.name %>.jquery.js',
                 dest: 'build/<%= pkg.name %>.jquery.min.js'
+            },
+            build_with_extras: {
+                src: ['src/<%= pkg.name %>.jquery.js', 'src/<%= pkg.name %>.extras.js'],
+                dest: 'build/<%= pkg.name %>.full.jquery.min.js'
             }
         }
     });

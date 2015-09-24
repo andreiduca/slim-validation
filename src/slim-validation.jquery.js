@@ -28,10 +28,10 @@
                 }
             ),
 
-            integer: $.extend(new $.fn.ValidationRule(function(value) {
+            integer: $.extend(new $.fn.ValidationRule(function (value) {
                     return value == parseInt(value);
                 }), {
-                    cleanVal: function(value) {
+                    cleanVal: function (value) {
                         return value.replace(/[^\w\-]/gi, '');
                     }
                 }
@@ -95,7 +95,7 @@
                     return typeof value !== 'undefined' && value.length >= parseInt(param);
                 }), {
                     withParam: true,
-                    cleanVal: function(value, param) {
+                    cleanVal: function (value, param) {
                         if (typeof param != 'undefined' && !This.integer.validate(param)) {
                             throw new Error("Parameter " + param + " for validation rule 'minLength' is not a valid integer.");
                         }
@@ -108,7 +108,7 @@
                     return typeof value !== 'undefined' && value.length <= parseInt(param);
                 }), {
                     withParam: true,
-                    cleanVal: function(value, param) {
+                    cleanVal: function (value, param) {
                         if (typeof param != 'undefined' && !This.integer.validate(param)) {
                             throw new Error("Parameter " + param + " for validation rule 'maxLength' is not a valid integer.");
                         }
@@ -157,32 +157,44 @@
             var rule = rules[i];
             var param = (rules[i+1] ? rules[i+1] : null);
 
-            // stop further processing
             if (rule === '' || rule === 'skip' || (rule === 'optional' && inputValue === '')) {
+                // stop further processing
                 break;
             }
+            else if (rule === 'optional') {
+                // go to the next rule
+                continue;
+            }
 
-            if (typeof Validator[rule] !== 'undefined') {
+            // try either a plugin-defined validation rule or a custom global-scope validation rule
+            var validationRule = Validator[rule] || window[rule] || null;
 
-                // rule needs further cleanliness of value
-                if (typeof Validator[rule].cleanVal === 'function') {
-                    inputValue = Validator[rule].cleanVal(inputValue, param);
+            if (validationRule === null) {
+                if (console && console.warn) {
+                    console.warn("Validation rule '" + rule + "' is not defined.");
                 }
+                continue;
+            }
 
-                // treat next rule as a parameter for current rule
-                if (Validator[rule].withParam) {
-                    i++;
-                }
+            // rule needs further cleanliness of value
+            if (typeof validationRule.cleanVal === 'function') {
+                inputValue = validationRule.cleanVal(inputValue, param);
+            }
 
-                // validate the input for current rule
-                if (!Validator[rule].validate(inputValue, param)) {
-                    isValid = false;
-                    errorMessage = ($input.attr('data-error-' + rule) || $input.attr('data-error') || '');
-                }
+            // treat next rule as a parameter for current rule
+            if (validationRule.withParam === true) {
+                i++;
+            }
+
+            // validate the input for current rule
+            isValid = validationRule.validate(inputValue, param);
+
+            if (!isValid) {
+                errorMessage = ($input.attr('data-error-' + rule) || $input.attr('data-error') || '');
             }
         }
 
-        $input.val(inputValue);
+        $input.val(inputValue); // TODO: exclude select, checkbox, radio and password input fields from this
         $input.attr('data-is-valid', isValid);
         $input.trigger('validation:end', [$input, inputValue, isValid, errorMessage]);
 
