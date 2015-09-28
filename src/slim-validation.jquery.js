@@ -126,16 +126,6 @@
                         return value.trim();
                     }
                 }
-            ),
-
-            telephone: $.extend(new $.fn.ValidationRule(function (value) {
-                    // TODO: implement logic here
-                    return false;
-                }), {
-                    cleanVal: function (value) {
-                        return value.replace(/[\+\-\.\s\(\),#:]/gi, '');
-                    }
-                }
             )
         };
 

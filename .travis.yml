@@ -3,4 +3,7 @@ node_js:
   - "0.12"
 before_install:
   - npm install -g grunt-cli
-install: npm install
+install:
+  - npm install
+after_success:
+  - npm run report-coverage

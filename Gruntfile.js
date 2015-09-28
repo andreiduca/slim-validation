@@ -16,13 +16,17 @@ module.exports = function (grunt) {
             all: ['src/*.js', 'test/*.js']
         },
 
-        blanket_qunit: {
-            all: {
-                options: {
-                    urls: [
-                        'test/validation-rules.html?coverage=true&gruntReport'
-                    ],
-                    threshold: 90
+        qunit: {
+            all: ['test/**/*.html'],
+            options: {
+                //'--web-security': 'no',
+                coverage: {
+                    disposeCollector: true,
+                    src: ['src/**/*.js'],
+                    instrumentedFiles: 'temp/',
+                    lcovReport: 'report/',
+                    jsonReport: 'report/',
+                    linesThresholdPct: 95
                 }
             }
         },
@@ -30,7 +34,7 @@ module.exports = function (grunt) {
         watch: {
             scripts: {
                 files: ['**/*.js'],
-                tasks: ['jshint', 'blanket_qunit'],
+                tasks: ['jshint', 'qunit'],
                 options: {
                     spawn: true
                 }
@@ -54,10 +58,10 @@ module.exports = function (grunt) {
 
     // Load plugins
     grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks('grunt-blanket-qunit');
+    grunt.loadNpmTasks('grunt-qunit-istanbul');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
 
     // Default tasks to run
-    grunt.registerTask('default', ['jshint', 'blanket_qunit', 'uglify']);
+    grunt.registerTask('default', ['jshint', 'qunit', 'uglify']);
 };
