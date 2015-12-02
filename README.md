@@ -5,6 +5,13 @@ Lightweight jQuery validation plugin.
 [![codecov.io](http://codecov.io/github/andreiduca/slim-validation/coverage.svg?branch=master)](http://codecov.io/github/andreiduca/slim-validation?branch=master)
 [![Build Status](https://travis-ci.org/andreiduca/slim-validation.svg?branch=master)](https://travis-ci.org/andreiduca/slim-validation)
 
+### Instalation
+**node:** `npm install slim-validation` :sparkling_heart:
+
+**git:** `git clone https://github.com/andreiduca/slim-validation.git`
+
+or download the ZIP archive, extract and use the files from the `/src` folder. See `/demo/index.html` for a quick implementation.
+
 ## Usage
 HTML-only setup required. Just set the "data-validate" custom attribute on your inputs and you're ready to go:
 
