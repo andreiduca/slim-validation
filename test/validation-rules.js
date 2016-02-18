@@ -1,3 +1,8 @@
+// Custom validation function
+function foo(value) {
+    return value == "bar";
+}
+
 // shadow input to test against
 var $input = $("<input>");
 $input.attr('type', "text").attr('data-error', "default error message");
@@ -449,6 +454,7 @@ QUnit.test("Invalid validation rules", function (assert) {
     // override console.warn() behavior to capture warnings
     var warnings = [];
     var qwarn = console.warn;
+
     console.warn = function() {
         warnings.push(arguments);
         qwarn.apply(console, arguments);

@@ -25,14 +25,14 @@ Chain multiple validation rules using the empty space as a delimiter:
 <input type="text" data-validate="required email" />
 ```
 
-## Validation behaviour
+## Validation behavior
 The validation action is triggered by default on the "blur" event on each input.
 
-After each validation, a custom event is triggered so you can bind your own behaviour to it, like this:
+After each validation, a custom event is triggered so you can bind your own behavior to it, like this:
 
 ```
 $('body').on('validation:end', '[data-validate]', function(event, $input, value, isValid, errorMessage) {
-    // ... yout code goes here
+    // ... your code goes here
 });
 ```
 
@@ -73,7 +73,7 @@ Custom error messages for each validation rule can also be defined:
         data-error-email="Invalid email" />
 ```
 
-This is great for internationalised websites where you need translated error messages, and works best with template engines such as smarty or twig. Yes: no more javascript files filled with translated messages!
+This is great for internationalized websites where you need translated error messages, and works best with template engines such as smarty or twig. Yes: no more javascript files filled with translated messages!
 
 ## Advanced validation rules
 Some rules require a configurable parameter, like a number to compare against. It's simple: just add the number after that rule:

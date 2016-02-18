@@ -13,7 +13,7 @@ module.exports = function (grunt) {
                     jQuery: true
                 }
             },
-            all: ['src/*.js', 'test/*.js']
+            all: ['src/**/*.js', 'test/*.js']
         },
 
         qunit: {
@@ -22,7 +22,7 @@ module.exports = function (grunt) {
                 //'--web-security': 'no',
                 coverage: {
                     disposeCollector: true,
-                    src: ['src/**/*.js'],
+                    src: ['build/**/*.js'],
                     instrumentedFiles: 'temp/',
                     lcovReport: 'report/',
                     jsonReport: 'report/',
@@ -31,12 +31,10 @@ module.exports = function (grunt) {
             }
         },
 
-        watch: {
+        browserify: {
             scripts: {
-                files: ['**/*.js'],
-                tasks: ['jshint', 'qunit'],
-                options: {
-                    spawn: true
+                files: {
+                    'build/slim-validation.jquery.js': ['src/*.js']
                 }
             }
         },
@@ -46,14 +44,21 @@ module.exports = function (grunt) {
                 banner: '/** <%= pkg.name %> v<%= pkg.version %> */\n'
             },
             build: {
-                src: 'src/<%= pkg.name %>.jquery.js',
+                src: 'build/<%= pkg.name %>.jquery.js',
                 dest: 'build/<%= pkg.name %>.jquery.min.js'
-            },
-            build_with_extras: {
-                src: ['src/<%= pkg.name %>.jquery.js', 'src/<%= pkg.name %>.extras.js'],
-                dest: 'build/<%= pkg.name %>.full.jquery.min.js'
+            }
+        },
+
+        watch: {
+            scripts: {
+                files: ['src/**/*.js', 'test/**/*.js'],
+                tasks: ['jshint', 'build', 'test'],
+                options: {
+                    spawn: true
+                }
             }
         }
+
     });
 
     // Load plugins
@@ -61,7 +66,9 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-qunit-istanbul');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-browserify');
 
     // Default tasks to run
-    grunt.registerTask('default', ['jshint', 'qunit', 'uglify']);
+    grunt.registerTask('build', ['browserify', 'uglify']);
+    grunt.registerTask('test', ['qunit']);
 };
