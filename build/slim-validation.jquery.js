@@ -234,6 +234,28 @@ var Validator = require('./modules/Validator');
     };
 
 
+    $.fn.validateForm = function () {
+        var $form = $(this);
+
+        var isValid = true;
+        var $firstErrorInput = null;
+
+        // validate each field in current form
+        $form.find('[data-validate]').each(function () {
+            if (!$(this).validateInput()) {
+                isValid = false;
+
+                if ($firstErrorInput === null) {
+                    $firstErrorInput = $(this);
+                }
+            }
+        });
+
+        $form.trigger('validation:form', [$form, isValid, $firstErrorInput]);
+
+        return isValid;
+    };
+
     $(window).load(function () {
         $('body').on('blur', '[data-validate]', function () {
             $(this).validateInput();

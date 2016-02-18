@@ -6,15 +6,26 @@
 </head>
 <body>
 
-<p>
-    <input id="test" type="text" data-validate="required minLength 3" data-error="invalid data" data-error-minlength="3 characters minimum" />
-</p>
-<p>
-    <input id="optional" type="text" data-validate="minLength 3" data-error-minlength="3 characters minimum" />
-</p>
-<p>
-    <input id="dependent" type="text" data-validate="requiredBy #optional" data-error-requiredBy="this also must be filled" />
-</p>
+<form id="testForm">
+    <p>
+        <label for="test">Required field</label>
+        <br />
+        <input id="test" type="text" data-validate="required" data-error="invalid data" />
+    </p>
+    <p>
+        <label for="optional">Minimum length of 3</label>
+        <br />
+        <input id="optional" type="text" data-validate="minLength 3" data-error-minlength="3 characters minimum" />
+    </p>
+    <p>
+        <label for="dependent">Required only if above input is filled</label>
+        <br />
+        <input id="dependent" type="text" data-validate="requiredBy #optional" data-error-requiredBy="this also must be filled" />
+    </p>
+    <p>
+        <button type="submit">Validate form</button>
+    </p>
+</form>
 
 <script type="text/javascript" src="http://code.jquery.com/jquery-2.2.0.min.js"></script>
 <script type="text/javascript" src="../build/slim-validation.jquery.min.js"></script>
@@ -36,6 +47,19 @@
                 input.css({"border": "1px solid green"});
             }
         });
+
+        $('body').on('validation:form', '#testForm', function(event, $form, isValid, $firstErrorInput) {
+            alert('Form is ' + (isValid ? 'valid' : 'invalid'));
+            $firstErrorInput.focus();
+        });
+
+        $("#testForm").on('submit', function (event) {
+            event.preventDefault();
+
+            if ($(this).validateForm()) {
+                alert("The form will be sent now.");
+            }
+        })
     });
 </script>
 </body>

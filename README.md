@@ -58,6 +58,25 @@ $('body').on('validation:end', '[data-validate]', function(event, $input, value,
 
 **Note:** `$input` is a jQuery wrapper of the actual input being validated.
 
+## Form validation
+You can also validate an entire form at once.
+ 
+```
+$("#testForm").validateForm();
+```
+
+When a form is validated, all containing HTML elements having the `data-validate` attribute will be validated.
+
+In the end, another custom event is triggered:
+
+```
+$('body').on('validation:form', '#testForm', function(event, $form, isValid, $firstErrorInput) {
+    // ... your code goes here
+});
+ ```
+ 
+You can see if the `$form` has errors or not with the `isValid` parameter and you can, for example, scroll to the `$firstErrorInput` and focus it.
+
 ## Error messages
 Error messages are also defined with custom "data-" attributes:
 
